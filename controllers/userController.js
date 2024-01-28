@@ -25,25 +25,37 @@ const { User, Thought } = require('../models');
 //   ]);
 
 module.exports = {
-  // Get all students
+  // Get all users
+  // async getUsers(req, res) {
+  //   try {
+  //     const users = await User.find();
+
+  //     const userObj = {
+  //       users
+  //     };
+
+  //     res.json(userObj);
+  //   } catch (err) {
+  //     console.log(err);
+  //     return res.status(500).json(err);
+  //   }
+  // },
+
+  // get all users
   async getUsers(req, res) {
     try {
-      const users = await User.find();
-
-      const userObj = {
-        users
-      };
-
-      res.json(userObj);
+      const users = await User.find().populate('thoughts');
+      res.json(users);
     } catch (err) {
-      console.log(err);
-      return res.status(500).json(err);
+      res.status(500).json(err);
     }
   },
-  // Get a single student
+
+  // Get a single user
   async getSingleUser(req, res) {
     try {
       const user = await User.findOne({ _id: req.params.userId })
+        .populate('thoughts')
         .select('-__v');
 
       if (!user) {
@@ -91,6 +103,25 @@ module.exports = {
       res.json({ message: 'User successfully deleted' });
     } catch (err) {
       console.log(err);
+      res.status(500).json(err);
+    }
+  },
+
+  // Update a user
+  async updateUser(req, res) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $set: req.body },
+        { runValidators: true, new: true }
+      );
+
+      if (!user) {
+        res.status(404).json({ message: 'No user with this id!' });
+      }
+
+      res.json(user);
+    } catch (err) {
       res.status(500).json(err);
     }
   },
