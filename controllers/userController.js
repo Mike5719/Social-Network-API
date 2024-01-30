@@ -1,45 +1,8 @@
 const { ObjectId } = require('mongoose').Types;
 const { User, Thought } = require('../models');
 
-// // Aggregate function to get the number of students overall
-// const headCount = async () => {
-//   const numberOfStudents = await Student.aggregate()
-//     .count('studentCount');
-//   return numberOfStudents;
-// }
-
-// // Aggregate function for getting the overall grade using $avg
-// const grade = async (studentId) =>
-//   Student.aggregate([
-//     // only include the given student by using $match
-//     { $match: { _id: new ObjectId(studentId) } },
-//     {
-//       $unwind: '$assignments',
-//     },
-//     {
-//       $group: {
-//         _id: new ObjectId(studentId),
-//         overallGrade: { $avg: '$assignments.score' },
-//       },
-//     },
-//   ]);
 
 module.exports = {
-  // Get all users
-  // async getUsers(req, res) {
-  //   try {
-  //     const users = await User.find();
-
-  //     const userObj = {
-  //       users
-  //     };
-
-  //     res.json(userObj);
-  //   } catch (err) {
-  //     console.log(err);
-  //     return res.status(500).json(err);
-  //   }
-  // },
 
   // get all users
   async getUsers(req, res) {
@@ -60,7 +23,7 @@ module.exports = {
         .select('-__v');
 
       if (!user) {
-        return res.status(404).json({ message: 'No student with that ID' })
+        return res.status(404).json({ message: 'No user with that ID' })
       }
 
       res.json({
@@ -89,17 +52,6 @@ module.exports = {
         return res.status(404).json({ message: 'No such user exists' });
       }
 
-    //   const course = await Course.findOneAndUpdate(
-    //     { students: req.params.studentId },
-    //     { $pull: { students: req.params.studentId } },
-    //     { new: true }
-    //);
-
-    //   if (!course) {
-    //     return res.status(404).json({
-    //       message: 'Student deleted, but no courses found',
-    //     });
-    //   }
 
       res.json({ message: 'User successfully deleted' });
     } catch (err) {
@@ -127,16 +79,16 @@ module.exports = {
     }
   },
 
-   // Add a friend to a user
-   async addFriend(req, res) {
+  // Add a friend to a user
+  async addFriend(req, res) {
     console.log('You are adding a friend');
     console.log(req.body);
 
     try {
+      console.log(req.body);
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
-        // { $addtoSet: { friends: req.params.friendId } },
-        { $addtoSet: {friends: req.body }},
+        { $addToSet: { friends: req.params.friendId } },
         { runValidators: true, new: true }
       );
 
@@ -156,7 +108,7 @@ module.exports = {
     try {
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
-        { $pull: { friends: { friendId: req.params.friendId } } },
+        { $pull: { friends: req.params.friendId } },
         { runValidators: true, new: true }
       );
 

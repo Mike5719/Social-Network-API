@@ -44,7 +44,7 @@ module.exports = {
         res.status(404).json({ message: 'No thought with that ID' });
       }
 
-    //   await Reaction.deleteMany({ _id: { $in: thought.reactions } });
+
       res.json({ message: 'Thought and reactions deleted!' });
     } catch (err) {
       res.status(500).json(err);
